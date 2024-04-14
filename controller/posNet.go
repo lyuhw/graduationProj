@@ -87,6 +87,18 @@ func SelectMaxCoinAgeWallet(wallets []Wallet) int {
 	return selectedWalletIndex
 }
 
+func SelectMaxCoinAge(wallets []Wallet) int {
+	maxCoinAge := 0
+	for i := 0; i < len(wallets); i++ {
+		wallet := wallets[i]
+		coinAge := wallet.GetTokens() * int(wallet.GetOnlineTime().Minutes())
+		if coinAge > maxCoinAge {
+			maxCoinAge = coinAge
+		}
+	}
+	return maxCoinAge
+}
+
 func resetSelectedWalletCoinAge(wallets []Wallet, selectedWalletIndex int) {
 	wallets[selectedWalletIndex].SetCoinAge(0)
 }
@@ -104,9 +116,12 @@ func Get() int {
 	// 动态在线，空投随机的代币并统计在线时间
 	distributeTokensAndCalculateCoinAge(Wallets)
 
+	// 清空切片
+	CoinAgeSlice = CoinAgeSlice[:0]
 	// 统计币龄，币龄等于用户钱包的代币乘以该用户持有该代币的在线时间
 	for i := 0; i < len(Wallets); i++ {
 		wallet := Wallets[i]
+		CoinAgeSlice = append(CoinAgeSlice, wallet.GetCoinAge())
 		fmt.Printf("用户 %d 的币龄为 %d\n", i+1, wallet.GetCoinAge())
 	}
 	fmt.Println("---------------")
@@ -114,10 +129,13 @@ func Get() int {
 	// 选出币龄最大值作为记账者，被选出者币龄清零
 	selectedWalletIndex := SelectMaxCoinAgeWallet(Wallets)
 	//fmt.Printf("被选出的记账者是用户 %d\n", selectedWalletIndex+1)
+	SelectedWalletCoinAge = Wallets[selectedWalletIndex].GetCoinAge()
 	resetSelectedWalletCoinAge(Wallets, selectedWalletIndex)
 	return selectedWalletIndex + 1
 }
 
+var SelectedWalletCoinAge int
+var CoinAgeSlice []int
 var SelectWalletSlice []int
 
 func runPosNet() {

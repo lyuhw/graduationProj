@@ -1,12 +1,9 @@
 package server
 
-func CoinAgeAttack() string {
-	if coinAgeCompare() == true {
-		return "CoinAgeAttack!"
-	}
-	return ""
+func FiftyAttack() string {
+	return " FiftyAttack! "
 }
 
 func BadForDao() string {
-	return "BadForDao!"
+	return " BadForDao! "
 }

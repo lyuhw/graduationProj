@@ -66,9 +66,13 @@ func main() {
 
 	r.GET("/select", func(c *gin.Context) {
 		selectIndex := controller.SelectWalletSlice[len(controller.SelectWalletSlice)-1]
+		everyCoinAge := controller.CoinAgeSlice[:]
+		selectAge := controller.SelectedWalletCoinAge
 		c.HTML(http.StatusOK, "index.html", gin.H{
 			"title":               "selectedWallet",
-			"selectedWalletIndex": selectIndex})
+			"coinAge":             everyCoinAge,
+			"selectedWalletIndex": selectIndex,
+			"selectedCoinAge":     selectAge})
 	})
 
 	r.POST("/getData", func(c *gin.Context) {
@@ -83,7 +87,6 @@ func main() {
 		c.JSON(http.StatusOK, response)
 	})
 
-	//--------------------------------------
 	r.POST("/result", func(c *gin.Context) {
 		inputValue := c.PostForm("input")
 		setThreshold, err := strconv.Atoi(inputValue)
@@ -92,20 +95,19 @@ func main() {
 			return
 		}
 
-		if setThreshold <= server.DataDetect() {
-			c.String(http.StatusOK, "ATTACK!!!")
-			//response := Response{Data: "ATTACK!!!"}
-			//c.JSON(http.StatusOK, response)
+		if setThreshold < server.GetProcessData() {
+			//c.String(http.StatusOK, "ATTACK!!!")
+			c.Redirect(http.StatusFound, "/Attack")
 			attackData := ""
-			switch server.DataDetect() {
+			switch server.GetProcessData() {
 			case 1:
 				attackData = server.BadForDao()
 			case 10:
-				attackData = server.CoinAgeAttack()
+				attackData = server.FiftyAttack()
 			case 11:
-				attackData = server.CoinAgeAttack() + server.BadForDao()
+				attackData = server.FiftyAttack() + server.BadForDao()
 			default:
-				attackData = "Not a SetAttack!"
+				attackData = "UnSetAttack!"
 			}
 			historyBlock = server.CreateBlock(attackData, historyChain)
 
@@ -116,21 +118,32 @@ func main() {
 			printBlock(historyBlock)
 			insertBlock(db, historyBlock)
 		} else {
-			c.String(http.StatusOK, "There NO Attack")
-			//response := Response{Data: "There No Attack"}
-			//c.JSON(http.StatusOK, response)
+			//c.String(http.StatusOK, "There NO Attack")
+			c.Redirect(http.StatusFound, "/NoAttack")
 		}
+	})
+
+	r.GET("/Attack", func(c *gin.Context) {
+		// 渲染attack.html页面
+		c.HTML(http.StatusOK, "attack.html", nil)
+	})
+
+	r.GET("/NoAttack", func(c *gin.Context) {
+		// 渲染noAttack.html页面
+		c.HTML(http.StatusOK, "noAttack.html", nil)
 	})
 
 	//查看所有历史report
 	r.GET("/blocks", printAllBlock)
+	r.Handle("POST", "/blocks", func(c *gin.Context) {
+		c.Redirect(http.StatusFound, "/blocks")
+	})
 
 	//设置404界面
 	r.NoRoute(func(c *gin.Context) {
 		c.String(http.StatusNotFound, "404 not found2222")
 	})
 	r.Run(":8080")
-
 }
 
 func insertBlock(db *sql.DB, historyBlock server.Block) {

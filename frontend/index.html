@@ -17,8 +17,7 @@
 <!--    <br/>-->
 <!--    <button type="submit">提交</button>-->
 <!--</form>-->
-<!--<br/>-->
-<!--<div id="result"></div>-->
+
 <!--<br/>-->
 <!--<form action="/result" method="post">-->
 <!--    <label for="input">请输入一个数字：</label>-->
@@ -62,16 +61,22 @@
             background-color: #f2f2f2;
         }
         h1 {
+            width: 100%;
+            font-size: 25px;
             text-align: center;
-            margin-top: 50px;
+            margin-top: 10px;
+        }
+        h2 {
+            width: 100%;
+            font-size: 16px;
+            text-align: center;
+            margin-top: 10px;
         }
         form {
             max-width: 400px;
             margin: 0 auto;
             background-color: #fff;
-            padding: 20px;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 15px;
         }
         label {
             display: block;
@@ -94,6 +99,17 @@
             cursor: pointer;
             margin-top: 10px; /* 添加这一行来在按钮上方留出空行 */
         }
+        input[type="submit"] {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: #fff;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            margin-top: 10px; /* 添加这一行来在按钮上方留出空行 */
+        }
         #result {
             max-width: 400px;
             margin: 20px auto;
@@ -105,11 +121,16 @@
     </style>
 </head>
 <body>
-<h1>记账节点为{{.selectedWalletIndex}}</h1>
+<h2>用户币龄：{{.coinAge}}</h2>
+<h1>记账节点：{{.selectedWalletIndex}}</h1>
+<h1>记账节点币龄：{{.selectedCoinAge}}</h1>
 <form action="/result" method="post">
-    <label for="input">请输入攻击阈值：</label>
+    <label for="input">请输入您的攻击阈值：</label>
     <input type="text" id="input" name="input" pattern="^(00|01|10|11)$" placeholder="请输入00、01、10或11">
     <button type="submit">提交</button>
+</form>
+<form action="/blocks" method="post">
+    <input type="submit" value="查看历史攻击报告">
 </form>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>

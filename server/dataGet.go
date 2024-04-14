@@ -2,35 +2,33 @@ package server
 
 import (
 	"math/rand"
-	"time"
 )
 
-var processData = 00
+var processData int
 
-func coinAgeCompare() bool {
-	// 设置随机数种子
-	rand.Seed(time.Now().UnixNano())
+func ifFiftyAttack() {
 
 	// 生成1-10的随机数
 	randomNumber := rand.Intn(10) + 1
 
 	if randomNumber%2 == 0 {
 		processData = 10
-		return true
 	} else {
-		processData = 00
-		return false
+		processData = 0
 	}
 }
 
-func ifGoodForDao(gb bool) {
-	if !gb {
+func ifGoodForDao() {
+
+	rNumber := rand.Intn(10) + 1
+
+	if rNumber%2 == 0 {
 		processData++
 	}
 }
 
-func GetProcessData(gOrb bool) int {
-	coinAgeCompare()
-	ifGoodForDao(gOrb)
+func GetProcessData() int {
+	ifFiftyAttack()
+	ifGoodForDao()
 	return processData
 }
